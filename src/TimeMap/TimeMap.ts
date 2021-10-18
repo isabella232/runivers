@@ -1,4 +1,4 @@
-import { Map } from 'mapbox-gl';
+import { Map } from 'maplibre-gl';
 
 import StrictEventEmitter from 'strict-event-emitter-types';
 import { EventEmitter } from 'events';
@@ -61,12 +61,12 @@ export class TimeMap {
 
   constructor(
     private webMap: WebMap<Map, TLayer>,
-    private options: TimeMapOptions = {} as TimeMapOptions
+    private options: TimeMapOptions = {} as TimeMapOptions,
   ) {}
 
   getTimeGroup(groupName = ''): TimeLayersGroup {
     const group = this._timeLayersGroups.find(
-      (x) => x.name === groupName
+      (x) => x.name === groupName,
     ) as TimeLayersGroup;
     return group;
   }
@@ -100,7 +100,7 @@ export class TimeMap {
 
   updateLayer(
     layerId: string | false,
-    groupName = ''
+    groupName = '',
   ): Promise<TimeLayersGroup | undefined> {
     const group = this.getTimeGroup(groupName);
     if (group) {
@@ -116,7 +116,7 @@ export class TimeMap {
 
   async updateLayers(layerIdRecord: LayerIdRecord): Promise<void> {
     const updateLayersPromise = await this.getUpdateLayersPromise(
-      layerIdRecord
+      layerIdRecord,
     );
     return this.finishLoading(updateLayersPromise, layerIdRecord);
   }
@@ -233,7 +233,7 @@ export class TimeMap {
   async _stepReady(
     year: number,
     callback: (year: number, nextCb?: () => void, stopCb?: () => void) => void,
-    previous?: boolean
+    previous?: boolean,
   ): Promise<void> {
     let nextLayers: LayerMetaRecord = this._getLayersByYear(year, previous);
     if (!nextLayers) {
@@ -263,7 +263,7 @@ export class TimeMap {
         callback(
           y,
           () => finish(),
-          () => resetLoading()
+          () => resetLoading(),
         );
       };
       const noChange = Object.entries(nextLayers).every(([groupName, x]) => {
@@ -289,7 +289,7 @@ export class TimeMap {
   }
 
   private _getTimeGroupBy(
-    fun: (timeLayer: TimeLayer) => boolean
+    fun: (timeLayer: TimeLayer) => boolean,
   ): TimeGroupDefinition | undefined {
     for (let fry = 0; fry < this._timeLayersGroups.length; fry++) {
       const layerGroup = this._timeLayersGroups[fry];
@@ -311,7 +311,7 @@ export class TimeMap {
       const groupConfig = this._groupsConfig[x.name];
       const layers = groupConfig.layersMeta.filter(
         // if range from 900 to 901, event may be only in 900
-        (d) => year >= d.from && year <= d.to
+        (d) => year >= d.from && year <= d.to,
       );
       layersMeta[x.name] = layers.length
         ? previous
@@ -376,7 +376,7 @@ export class TimeMap {
   }
 
   private _processGroupsMeta(
-    layersGroup: LayersGroup[]
+    layersGroup: LayersGroup[],
   ): Record<string, GroupsMeta> {
     const groupsMeta: Record<string, GroupsMeta> = {};
     layersGroup.forEach((group) => {

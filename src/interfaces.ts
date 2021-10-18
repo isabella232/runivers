@@ -1,5 +1,5 @@
-import { Marker } from 'mapbox-gl';
-import { LngLatBoundsArray } from '@nextgis/webmap';
+import { Marker } from 'maplibre-gl';
+import { LngLatBoundsArray } from '@nextgis/utils';
 import { MapboxglMapAdapterOptions } from '@nextgis/mapboxgl-map-adapter';
 import { Period } from './components/Panels/PeriodPanelControl';
 import { YearStat } from './components/Panels/YearsStatPanelControl';

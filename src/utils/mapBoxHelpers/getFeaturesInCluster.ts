@@ -1,10 +1,10 @@
-import { GeoJSONSource, MapboxGeoJSONFeature } from 'mapbox-gl';
+import { GeoJSONSource, MapboxGeoJSONFeature } from 'maplibre-gl';
 import { Feature } from 'geojson';
 
 export default function getFeaturesInCluster(
   source: GeoJSONSource,
   feature: MapboxGeoJSONFeature | Feature,
-  _features: Array<Feature | MapboxGeoJSONFeature> = []
+  _features: Array<Feature | MapboxGeoJSONFeature> = [],
 ): Promise<Feature[]> {
   return new Promise((resolve) => {
     const props = feature.properties && feature.properties;
@@ -18,7 +18,7 @@ export default function getFeaturesInCluster(
           for (const x of features) {
             promises.push(getFeaturesInCluster(source, x, _features));
           }
-          Promise.all(promises).then(() => resolve());
+          Promise.all(promises).then((resp) => resolve(resp.flat()));
         });
       } else {
         _features.push(feature);

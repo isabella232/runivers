@@ -1,13 +1,13 @@
 // import 'reset-css';
-import 'mapbox-gl/dist/mapbox-gl.css';
+import 'maplibre-gl/dist/maplibre-gl.css';
 // polyfills
-import 'core-js/stable';
+// import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 
 import { defined } from '@nextgis/utils';
 import { App } from './App';
 import config from '../config.json';
-import { version } from '../package.json';
+import pkg from '../package.json';
 // @ts-ignore
 import periods from './data/periods.csv';
 // @ts-ignore
@@ -56,7 +56,7 @@ const app = new App({
   areaStat,
   principalities01,
   principalities02,
-  version: version,
+  version: pkg.version,
   // @ts-ignore
   lineColor: config.lineColor,
   // @ts-ignore
@@ -76,7 +76,13 @@ app.emitter.on('build', () => {
 });
 
 // for testing and debug
-// @ts-ignore
+
 window.app = app;
-// @ts-ignore
-window.version = version;
+window.version = pkg.version;
+
+declare global {
+  interface Window {
+    app: App;
+    version: string;
+  }
+}

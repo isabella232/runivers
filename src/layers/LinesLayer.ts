@@ -1,4 +1,4 @@
-import { LinePaint } from 'mapbox-gl';
+import { LinePaint } from 'maplibre-gl';
 import { TimeLayer } from '../TimeMap/TimeGroup';
 import { BaseLayer } from './BaseLayer';
 

@@ -5,14 +5,11 @@ import {
   EventData,
   LngLatBounds,
   GeoJSONSource,
-} from 'mapbox-gl';
+} from 'maplibre-gl';
 
-import {
-  WebMap,
-  MvtAdapterOptions,
-  VectorLayerAdapter,
-  PropertiesFilter,
-} from '@nextgis/webmap';
+import { WebMap, MvtAdapterOptions, VectorLayerAdapter } from '@nextgis/webmap';
+import { PropertiesFilter } from '@nextgis/properties-filter';
+
 import { Feature, FeatureCollection, Point, Polygon } from 'geojson';
 
 type UsedMapEvents = 'click' | 'mouseenter' | 'mouseleave';
@@ -32,7 +29,7 @@ export interface TimeLayersGroupOptions {
   oldNgwMvtApi?: boolean;
   addLayers: (
     url: string,
-    id: string
+    id: string,
   ) => Promise<TimeLayer>[] | Promise<Promise<TimeLayer>[]> | undefined;
   setUrl?: (opt: { baseUrl: string; resourceId: string }) => string;
   getFillColor?: (...args: any[]) => any;
@@ -64,7 +61,7 @@ export class TimeLayersGroup {
 
   constructor(
     private webMap: WebMap<Map, TLayer>,
-    public options: TimeLayersGroupOptions
+    public options: TimeLayersGroupOptions,
   ) {
     this.name = this.options.name;
     this._visible = this.options.visible ?? true;
@@ -75,8 +72,12 @@ export class TimeLayersGroup {
       this.opacity = options.opacity;
     }
     if (this._isWaitDataLoadedGroup()) {
-      webMap.mapAdapter.emitter.on('data-loaded', (data) => this._onData(data));
-      webMap.mapAdapter.emitter.on('data-error', (data) => this._onData(data));
+      webMap.mapAdapter.emitter.on('data-loaded', (data: any) =>
+        this._onData(data),
+      );
+      webMap.mapAdapter.emitter.on('data-error', (data: any) =>
+        this._onData(data),
+      );
     }
   }
 
@@ -201,7 +202,7 @@ export class TimeLayersGroup {
             reject(er);
           });
       } else {
-        resolve();
+        resolve('');
       }
     });
     return promise.then(() => {
@@ -260,7 +261,7 @@ export class TimeLayersGroup {
         for (const timeLayer of mapLayers) {
           const features = this.fitToFilter(
             ['in', filterIdField, ...ids],
-            timeLayer
+            timeLayer,
           );
           if (features && features.length) {
             return features;
@@ -307,7 +308,7 @@ export class TimeLayersGroup {
 
   private _getWebMapLayer(id: string): VectorLayerAdapter {
     return this.webMap.getLayer(
-      this._getWebMapLayerId(id)
+      this._getWebMapLayerId(id),
     ) as VectorLayerAdapter;
   }
 
@@ -388,7 +389,7 @@ export class TimeLayersGroup {
   private _onLayerClick(
     e: MapMouseEvent & EventData,
     layerId: string,
-    adapterId: string
+    adapterId: string,
   ) {
     const map = this.webMap.mapAdapter.map;
     const point = e.point;
@@ -401,7 +402,7 @@ export class TimeLayersGroup {
           [point.x - width / 2, point.y - height / 2],
           [point.x + width / 2, point.y + height / 2],
         ],
-        { layers: [layerId] }
+        { layers: [layerId] },
       );
       const feature = features[0];
       const prop = feature.properties;
@@ -486,11 +487,11 @@ export class TimeLayersGroup {
 
   private _forEachDataLayer(
     layerId: string,
-    fun: (dataLayerId: string) => void
+    fun: (dataLayerId: string) => void,
   ) {
     this.forEachTimeLayer(
       layerId,
-      (timeLayer) => timeLayer.layer && timeLayer.layer.forEach((y) => fun(y))
+      (timeLayer) => timeLayer.layer && timeLayer.layer.forEach((y) => fun(y)),
     );
   }
 
@@ -516,7 +517,7 @@ export class TimeLayersGroup {
 
   private async _addLayer(
     url: string,
-    id: string
+    id: string,
   ): Promise<TimeLayer[] | undefined> {
     const layers = await this.options.addLayers(url, id);
     if (layers) {

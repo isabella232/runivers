@@ -179,7 +179,7 @@ export class BoundaryLayer extends BaseLayer {
   private _createPropBlock(
     fields: PopupContentField<keyof HistoryLayerProperties>[],
     props: HistoryLayerProperties,
-    headerField = 'name'
+    headerField = 'name',
   ) {
     const block = document.createElement('div');
     const _fields: PopupContentField[] = [...fields];
@@ -196,8 +196,8 @@ export class BoundaryLayer extends BaseLayer {
           `<h2>${_props[headerField]}
             ${showLink ? '<a class="feature-link">&#x1f517;</a>' : ''}
           </h2>`,
-          'prop header'
-        )
+          'prop header',
+        ),
       );
     }
 
@@ -220,7 +220,7 @@ export class BoundaryLayer extends BaseLayer {
       block.innerHTML += this._createPropStatusHtml(props);
     }
     const featureLink = block.getElementsByClassName(
-      'feature-link'
+      'feature-link',
     )[0] as HTMLElement;
     if (featureLink) {
       featureLink.addEventListener('click', () => {
@@ -236,7 +236,7 @@ export class BoundaryLayer extends BaseLayer {
 
   private _addPrincipalitiesFields(
     fields: PopupContentField[],
-    props: Record<string, any>
+    props: Record<string, any>,
   ) {
     const addProp = (value: any, opt: PopupContentField) => {
       fields.push({ name: opt.field, ...opt });
@@ -245,16 +245,16 @@ export class BoundaryLayer extends BaseLayer {
     const getHtml = (prop: keyof Principalities01, props: Principalities01) => {
       return this._createPropElement(
         `<a href="${props.desc_link}" target="_blank">${prop}</a>`,
-        ''
+        '',
       );
     };
     const getHtml2 = (
       prop: keyof Principalities02,
-      props: Principalities02
+      props: Principalities02,
     ) => {
       return this._createPropElement(
         `Правитель: <a href="${props.desc_link}" target="_blank">${prop}</a>`,
-        ''
+        '',
       );
     };
     const getHtmlFromTo = (prop: any, props: any) => {
@@ -264,11 +264,11 @@ export class BoundaryLayer extends BaseLayer {
     if (fid) {
       const prince01 = this._findPrincipalities01(
         fid,
-        this.app.timeMap.currentYear
+        this.app.timeMap.currentYear,
       );
       const prince02 = this._findPrincipalities02(
         fid,
-        this.app.timeMap.currentYear
+        this.app.timeMap.currentYear,
       );
       if (prince01) {
         props['desc_link'] = prince01.desc_link;

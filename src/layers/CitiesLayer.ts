@@ -1,6 +1,6 @@
 import '../img/city.png';
 
-import { Map } from 'mapbox-gl';
+import { Map } from 'maplibre-gl';
 import { EventEmitter } from 'events';
 import { Events } from '@nextgis/utils';
 
@@ -28,8 +28,10 @@ export class CitiesLayer extends BaseLayer {
     const map: Map | undefined = this.app.webMap.mapAdapter.map;
     if (map) {
       map.loadImage('images/city.png', (er: Error, image: ImageData) => {
-        map.addImage('city', image);
-        this.emitter.emit('load-images');
+        if (image instanceof HTMLImageElement) {
+          map.addImage('city', image);
+          this.emitter.emit('load-images');
+        }
       });
     }
   }

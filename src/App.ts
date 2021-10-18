@@ -1,12 +1,12 @@
 import './App.css';
 
-import { Map } from 'mapbox-gl';
+import { Map } from 'maplibre-gl';
 import { EventEmitter } from 'events';
 
-import { WebMap, Type } from '@nextgis/webmap';
+import { WebMap } from '@nextgis/webmap';
 import { QmsKit } from '@nextgis/qms-kit';
 import MapboxglAdapter from '@nextgis/mapboxgl-map-adapter';
-import { debounce } from '@nextgis/utils';
+import { debounce, Type } from '@nextgis/utils';
 
 import { SliderControl } from './components/SliderControl';
 import { getLayers } from './services/GetLayersService';
@@ -79,7 +79,7 @@ export class App {
     }
     this.updateDataByYear = debounce(
       (year: number) => this._updateDataByYear(year),
-      300
+      300,
     );
     this.createWebMap().then(() => {
       this._buildApp();
@@ -91,8 +91,9 @@ export class App {
     const webMap = new WebMap({
       mapAdapter: new MapboxglAdapter(),
       starterKits: [new QmsKit()],
+      ...options,
     });
-    await webMap.create(options);
+    await webMap.create();
     this.timeMap = new TimeMap(webMap, {
       fromYear: this.options.fromYear,
       getStatusLayer: (config: LayersGroup) => this._getStatusLayer(config),
@@ -182,8 +183,8 @@ export class App {
       manualOpacity: true,
       filterIdField: 'fid',
     };
-    const StatusLayer: Type<TimeLayersGroupOptions> | undefined = this
-      .statusLayers[config.name];
+    const StatusLayer: Type<TimeLayersGroupOptions> | undefined =
+      this.statusLayers[config.name];
     if (StatusLayer) {
       const statusLayer = new StatusLayer(this, options);
       return statusLayer;
@@ -195,7 +196,7 @@ export class App {
     const stepReady = (
       year: number,
       callback: (value: number) => void,
-      previous: boolean
+      previous: boolean,
     ) => {
       this.timeMap._stepReady(year, callback);
     };
@@ -304,7 +305,7 @@ export class App {
         'update',
         ({ yearStat }) => {
           this._markers.updateActiveMarker(yearStat);
-        }
+        },
       );
     }
     this.webMap.emitter.on('preclick', () => {

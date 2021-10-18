@@ -31,7 +31,8 @@
   "include": [
     "src/**/*.ts",
     "src/**/*.json",
-    "./nextgis_frontend/packages/global.d.ts"
+    "./nextgis_frontend/packages/global.d.ts",
+    "./nextgis_frontend/packages/mapboxgl-map-adapter/src/maplibregl.d.ts",
   ],
   "exclude": [
     "node_modules"

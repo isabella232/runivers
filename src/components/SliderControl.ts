@@ -1,17 +1,16 @@
 import './SliderControl.css';
-import 'nouislider/distribute/nouislider.css';
+import 'nouislider/dist/nouislider.css';
 
 import { EventEmitter } from 'events';
 import { WebMap } from '@nextgis/webmap';
 
-import noUiSlider, { PipsOptions } from 'nouislider';
-// @ts-ignore
+import noUiSlider, { API } from 'nouislider';
 import wNumb from 'wnumb';
 
 import './Links/img/rewind_next.svg';
 import './Links/img/rewind_previous.svg';
 
-type SliderValue = number | Array<number | null>;
+type SliderValue = number | string | (number | string)[];
 
 interface LabelInputElementOptions {
   label: HTMLDivElement | HTMLLabelElement;
@@ -27,12 +26,12 @@ export interface SliderOptions {
   value: number;
   animationDelay: number;
   playerControl?: boolean;
-  pips?: PipsOptions;
+  pips?: noUiSlider.PipsOptions;
 
   stepReady?(
     nextValue: number,
     callback: (value: number) => void,
-    previous?: boolean
+    previous?: boolean,
   ): void;
   filterPips?(value: any, type: number): -1 | 0 | 1 | 2; // -1 (no pip at all) 0 (no value) 1 (large value) 2 (small value)
 }
@@ -56,7 +55,7 @@ export class SliderControl {
 
   _animationStepInput?: HTMLInputElement;
   _sliderContainer?: HTMLElement;
-  _slider?: noUiSlider.noUiSlider;
+  _slider?: API;
   protected _playerControl?: HTMLElement;
   protected _playerControlPrevBtn?: HTMLElement;
   protected _playerControlNextBtn?: HTMLElement;
@@ -83,7 +82,7 @@ export class SliderControl {
 
   _createContainer(): HTMLElement {
     const element = document.createElement('div');
-    element.className = 'mapboxgl-ctrl slider-control';
+    element.className = 'maplibregl-ctrl slider-control';
     element.appendChild(this._createSliderContainer());
 
     const playerControl =
@@ -169,27 +168,27 @@ export class SliderControl {
       step,
       tooltips: [wNumb({ decimals: 0 })],
       start: [this.options.value],
-      pips:
-        this.options.pips !== undefined
-          ? this.options.pips
-          : {
-              mode: 'steps',
-              density: 3,
-              filter: this.options.filterPips,
-            },
+      pips: (this.options.pips !== undefined
+        ? this.options.pips
+        : {
+            mode: 'steps',
+            density: 3,
+            filter: this.options.filterPips,
+          }) as any,
     });
 
     slider.on('change', (values, handle) => {
-      this._onSliderClick(parseInt(values[0], 10));
+      const val = values[0];
+      const str = typeof val === 'string' ? parseInt(val, 10) : val;
+      this._onSliderClick(str);
     });
-    // @ts-ignore
     const sliderElement = slider.target as HTMLElement;
     sliderElement.addEventListener(
       'click',
       () => {
         this.stopAnimation();
       },
-      true
+      true,
     );
 
     this._sliderContainer = span;
@@ -254,7 +253,7 @@ export class SliderControl {
               }
             },
             previous,
-            this.options.step
+            this.options.step,
           );
         }
       };
@@ -335,7 +334,7 @@ export class SliderControl {
     // this._playerControl.innerHTML = this._getPlayerControlLabel();
     if (this._playerControl) {
       this._playerControl.classList[this._animationStatus ? 'add' : 'remove'](
-        'paused'
+        'paused',
       );
     }
 
@@ -384,7 +383,7 @@ export class SliderControl {
             }
             this.stopAnimation();
           }
-        }
+        },
       );
     } else {
       this.stopAnimation();
@@ -402,10 +401,10 @@ export class SliderControl {
     callback: (
       step: number | boolean,
       nextCb?: () => void,
-      stopCb?: () => void
+      stopCb?: () => void,
     ) => void,
     previous?: boolean,
-    stepLength?: number
+    stepLength?: number,
   ): void {
     const nextValue = this._getNextValue(previous, stepLength);
     const inRange =
